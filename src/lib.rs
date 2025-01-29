@@ -371,22 +371,47 @@ mod tests {
             Column::new("Value Right2", 0, Justification::Right).unwrap(),
         ]).unwrap();
 
+
+        table.add_row(vec![
+            "Jane Smith".to_string(),
+            "Project Manager".to_string(),
+            "On Leave".to_string(),
+            "3000.00".to_string(),
+            "4000.00".to_string(),
+        ]).unwrap();
+
         table.add_row(vec![
             "John Doe".to_string(),
-            "Software Engineer with the following data data data data data\nSpecializes in:\n- Rust\n- Go".to_string(),
+            "Software Engineer to long to long to long to long".to_string(),
             "Active".to_string(),
             "1000.00".to_string(),
             "2000.00".to_string(),
         ]).unwrap();
 
         table.add_row(vec![
-            "Jane Smith".to_string(),
+            "Bill Barney".to_string(),
             "Project Manager".to_string(),
-            "On Leave\nReturns next week".to_string(),
-            "3000.00".to_string(),
-            "4000.00".to_string(),
+            "On Leave".to_string(),
+            "3040.00".to_string(),
+            "4020.00".to_string(),
         ]).unwrap();
-
+        
+        table.add_row(vec![
+            "Sally Christopher".to_string(),
+            "Project Manager\nFormer engineer\nmore lines".to_string(),
+            "On Leave".to_string(),
+            "3040.00".to_string(),
+            "4020.00".to_string(),
+        ]).unwrap();
+        
+        table.add_row(vec![
+            "Sofia Fraks".to_string(),
+            "Director of Engineering ".to_string(),
+            "Active".to_string(),
+            "9000.00".to_string(),
+            "9099.00".to_string(),
+        ]).unwrap();
+        
         println!("\n=== All Features Test ===\n\n{}\n", table);
     }
 }
