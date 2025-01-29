@@ -62,7 +62,7 @@ impl Column {
     /// Returns a vector of formatted strings, one for each line in the cell.
     fn format_cell(&self, cell_value: &str) -> Vec<String> {
         
-        // Split the value into lines (if newlines (\n) are present in cell_value this is how multiline values are handled)
+        // Split the value into lines (if newlines (\n) are present in cell_value this is how multiline values are handled, otherwise is a vec of one element)
         let lines_of_cell: Vec<&str> = cell_value.split('\n').collect();
         
         lines_of_cell.into_iter()
@@ -126,8 +126,10 @@ impl Table {
     }
 
     /// Adds a row to the table. Returns an error if the number of values
-    /// doesn't match the number of columns.
+    /// doesn't match the number of columns. 
+    /// If the row is added successfully, the max length of each column is updated.
     pub fn add_row(&mut self, row: Vec<String>) -> Result<(), String> {
+        
         if row.len() != self.columns.len() {
             return Err(format!(
                 "Row has {} columns, expected {}",
@@ -150,20 +152,22 @@ impl Table {
 /// Handles multiline content, column alignment, and proper spacing.
 impl std::fmt::Display for Table {
     
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         if self.columns.is_empty() {
             return Ok(());
         }
 
         // Format header
+        // Reminder: the [0] below is because the header is a single line, so we only need the first element of the vec returned by format_cell
         let header: Vec<String> = self.columns
             .iter()
             .map(|col| col.format_cell(&col.name)[0].clone())
             .collect();
         
+        // Write the header to the formatter
         writeln!(f, "{}", header.join(" "))?;
 
-        // Format separator
+        // Format separator between header and rows
         let separator: Vec<String> = self.columns
             .iter()
             .map(|col| {
@@ -175,16 +179,22 @@ impl std::fmt::Display for Table {
                 "-".repeat(width)
             })
             .collect();
+        
+        // Write the separator to the formatter
         writeln!(f, "{}", separator.join(" "))?;
 
         // Format rows with multiline support
         for row in &self.rows {
+            
             // Convert each cell into a vector of formatted lines
             let formatted_cells: Vec<Vec<String>> = self.columns
                 .iter()
                 .zip(row)
                 .map(|(col, value)| col.format_cell(value))
                 .collect();
+            // Above creates a vec of vecs of strings, where each inner vec is a vec of strings representing the lines of a cell
+            // It looks like this: [[line1, line2, line3], [line1, line2], [line1, line2, line3, line4]]
+            // Non multiline cells are represented as a vec of one element
 
             // Find the maximum number of lines in any cell of this row
             let max_lines = formatted_cells
@@ -194,6 +204,7 @@ impl std::fmt::Display for Table {
                 .unwrap_or(1);
 
             // Print each line of the row
+            // For each line of the row, we need to print the corresponding line from each cell, or the empty string if the cell has fewer lines than the max
             for line_idx in 0..max_lines {
                 let line: Vec<String> = formatted_cells
                     .iter()
@@ -206,10 +217,13 @@ impl std::fmt::Display for Table {
                         }
                     })
                     .collect();
+                
+                // Write the line to the formatter
                 writeln!(f, "{}", line.join(" "))?;
             }
         }
 
+        // Return Ok to indicate successful formatting
         Ok(())
     }
 }
