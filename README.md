@@ -1,10 +1,10 @@
 # Rust Table Formatter
 
 A flexible Rust library for formatting tabular data with support for:
-- Multi-line cell content
+- Multi-line cell content (with newlines)
 - Custom column widths and truncation
 - Left/right text justification
-- Automatic column width adjustment
+- Automatic column width adjustment based on content
 
 ## Usage
 
