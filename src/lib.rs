@@ -219,7 +219,7 @@ impl std::fmt::Display for Table {
                 } else {
                     col.max_length
                 };
-                "-".repeat(width)
+                "=".repeat(width)
             })
             .collect();
         
