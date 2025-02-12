@@ -189,6 +189,11 @@ impl Table {
         self.rows.push(row);
         Ok(())
     }
+
+    /// Returns the number of rows in the table
+    pub fn row_count(&self) -> usize {
+        self.rows.len()
+    }
 }
 
 /// Implements the Display trait to enable formatting the table as a string.
@@ -413,5 +418,27 @@ mod tests {
         ]).unwrap();
         
         println!("\n=== All Features Test ===\n\n{}\n", table);
+    }
+
+    #[test]
+    fn test_row_count() {
+        let mut table = Table::new(vec![
+            Column::new("Name", 0, Justification::Left).unwrap(),
+            Column::new("Age", 0, Justification::Left).unwrap(),
+        ]).unwrap();
+
+        assert_eq!(table.row_count(), 0, "New table should have 0 rows");
+
+        table.add_row(vec![
+            "John Doe".to_string(),
+            "30".to_string(),
+        ]).unwrap();
+        assert_eq!(table.row_count(), 1, "Table should have 1 row after addition");
+
+        table.add_row(vec![
+            "Jane Smith".to_string(),
+            "25".to_string(),
+        ]).unwrap();
+        assert_eq!(table.row_count(), 2, "Table should have 2 rows after second addition");
     }
 }
