@@ -94,15 +94,16 @@ impl Column {
                     line.to_string()
                 };
 
-                // Pad the string based on justification
-                let width = if self.truncate_at > 0 {
+                // Use max_length for width unless truncation is needed
+                let effective_width = if self.truncate_at > 0 && self.max_length > self.truncate_at {
                     self.truncate_at
                 } else {
                     self.max_length
                 };
 
-                if result.chars().count() < width {
-                    let padding = " ".repeat(width - result.chars().count());
+                // Pad the string based on justification
+                if result.chars().count() < effective_width {
+                    let padding = " ".repeat(effective_width - result.chars().count());
                     match self.justification {
                         Justification::Left => result.push_str(&padding),
                         Justification::Right => result = format!("{}{}", padding, result),
@@ -117,11 +118,12 @@ impl Column {
     /// Creates an empty string of spaces matching the column's width.
     /// Used for padding multiline rows where some columns have fewer lines than others.
     fn format_empty(&self) -> String {
-        " ".repeat(if self.truncate_at > 0 {
+        let effective_width = if self.truncate_at > 0 && self.max_length > self.truncate_at {
             self.truncate_at
         } else {
             self.max_length
-        })
+        };
+        " ".repeat(effective_width)
     }
 }
 
