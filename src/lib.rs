@@ -208,29 +208,26 @@ impl std::fmt::Display for Table {
         }
 
         // Format header
-        // Reminder: the [0] below is because the header is a single line, so we only need the first element of the vec returned by format_cell
         let header: Vec<String> = self.columns
             .iter()
             .map(|col| col.format_cell(&col.name).map_or_else(|e| e, |v| v[0].clone()))
             .collect();
         
-        // Write the header to the formatter
         writeln!(f, "{}", header.join(" "))?;
 
-        // Format separator between header and rows
+        // Format separator using the same effective width logic as columns
         let separator: Vec<String> = self.columns
             .iter()
             .map(|col| {
-                let width = if col.truncate_at > 0 {
+                let effective_width = if col.truncate_at > 0 && col.max_length > col.truncate_at {
                     col.truncate_at
                 } else {
                     col.max_length
                 };
-                "=".repeat(width)
+                "=".repeat(effective_width)
             })
             .collect();
         
-        // Write the separator to the formatter
         writeln!(f, "{}", separator.join(" "))?;
 
         // Format rows with multiline support
